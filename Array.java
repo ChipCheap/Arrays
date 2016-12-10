@@ -2,7 +2,7 @@
 public class Array {
 	private static int[] tarray;		//zu Testzwecken t(est)array
 	private static boolean insideArray =true;		//boolscher Wert zur Bestimmung, ob ein Index noch in einem Array noch existiert (siehe a))
-	private static int arrayLength=0;	//Wert für array.length()
+	private static int arrayLength=0;	//Wert fÃ¼r array.length()
 	private static int arrayMax=0;		//Maximum eines Arrays
 	private static int indMax=0;		//Index des Maximums
 	public static void main(String[] args)
@@ -47,7 +47,7 @@ public class Array {
 			System.out.println("keine negativen Indizes");
 			return 0;
 		}
-		//falls i größer ist als die Länge des Arrays, wird der Fehler behandelt 
+		//falls i grÃ¶ÃŸer ist als die LÃ¤nge des Arrays, wird der Fehler behandelt 
 			//zudem wird die Variable insideArray auf falsch gesetzt, bedeutet, dass gewisser Index i nicht mehr
 			//im Array enthalten ist (fuer spaetere Anwendung nuetzlich 
 		try
@@ -179,11 +179,11 @@ public class Array {
 	public static void sort(int[] array)
 	{
 		arrayLength=arrayLength(array);
-		int[] tempArr=array;
-		int[] sortedArr=new int[arrayLength];
+		int[] tempArr=array;			//temporaeres Array zur Zwischenspeicherung
+		int[] sortedArr=new int[arrayLength];	//neu sortiertes Array, dessen aller Werte auf das eingegebene Array dann uebertragen werden
 		for(int i=0;i<arrayLength(array);i++)
 		{
-			sortedArr[arrayLength-1-i]=max(tempArr);
+			sortedArr[arrayLength-1-i]=max(tempArr);		
 			swap(tempArr,indMax,arrayLength(tempArr)-1);
 			tempArr=resize(tempArr,arrayLength(tempArr)-1);
 			System.out.println("tempArr:"+show(tempArr)+"\nsortedArr"+show(sortedArr));

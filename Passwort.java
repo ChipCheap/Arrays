@@ -27,17 +27,21 @@ public class Passwort {
 		//97-122 Kleinbuchstaben in ASCII
 		for(int i=0;i<eingabe.length();i++)
 		{
-	//		if((char)((int)eingabe.charAt(i)+index)>96&&(char)((int)eingabe.charAt(i)+index)<123)
-			temp=(char)((int)eingabe.charAt(i)+index);
-			/*	else{ausgabe+=eingabe.charAt(i);continue;}					// Versuch, Sonderzeichen nicht zu inkrementieren, fehlgeschlagen
-			*/
-			if(temp>122)
-			{
-				//loop back to start of alphabet
-				temp-=26;
+			if (!((int)eingabe.charAt(i) < 123 && (int)eingabe.charAt(i) > 96 )){
+				// wenn Zeichen ausser a..z enthalten sind, transformiere diese nicht
+				ausgabe = ausgabe + eingabe.charAt(i);
 			}
+			else
+			{
+				temp=(char)((int)eingabe.charAt(i)+index);
 			
-			ausgabe+=temp;
+				if(temp>122)
+				{
+					//loop back to start of alphabet
+					temp-=26;
+				}
+				ausgabe+=temp;
+			}
 		}
 		return ausgabe;
 	}

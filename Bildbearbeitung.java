@@ -10,8 +10,7 @@ import java.util.Arrays;
  * Bildmanipulationen aus. 
  */
 public class Bildbearbeitung {
-		//remove static later
-	private static int[][] pixels;
+	private  int[][] pixels;
 	
 	/**
 	 * Konstruktor fuer die Klasse Bildbearbeitung, die eine Bilddatei einliest
@@ -19,16 +18,17 @@ public class Bildbearbeitung {
 	 * @param file Einzulesende Bilddatei
 	 */
 	private Bildbearbeitung(String file) {
-		try {
+		try 
+		{
 			BufferedImage img = ImageIO.read(new File(file));
 			pixels = new int[img.getWidth()][img.getHeight()];
 			for(int i = 0; i < dimX(); i++)
 				for(int j = 0; j < dimY(); j++)
 				{
-				pixels[i][j] = img.getRGB(i, j);
-		//		System.out.println(pixels[i][j]);
-		}
-		} catch (IOException e) {}
+					pixels[i][j] = img.getRGB(i, j);
+				}
+		} 
+		catch (IOException e) {}
 	}	
 	
 	private int dimX(){
@@ -57,7 +57,7 @@ public class Bildbearbeitung {
 			ImageIO.write(img, "png", outputfile);
 		} catch (Exception e) {}
 	}
-//a)	take out static after finishing
+//a)	
 	/**
 	 * Diese Funktion nimmt einen ARGB-Wert und wandelt ihn in 
 	 * ein vierelementiges Array um, das die einzelnen Bytes 
@@ -66,42 +66,49 @@ public class Bildbearbeitung {
 	 * Information: alpha-rot-gruen-blau
 	 * @return 4-elementiges Array [alpha, red, green, blue]
 	 */
-	private static int[] getColors(int ARGB) {
+	private int[] getColors(int ARGB) {
 		int[] pixelBin=new int[32];		//temporaeres Array mit binaeren Werten der ARGB	(Hilfsarray)
 		int[] pixelFin=new int[4];		//Endausgabe fuer Methode	
-		String binARGB="";
-	//	System.out.println(Integer.toBinaryString(ARGB));		//test only
+		String binARGB="";				//binaerer ARGB String
 		binARGB=Integer.toBinaryString(ARGB);		//Umwandlung des ints in binaere Darstellung
 		for(int i=0;i<binARGB.length();i++)
 		{
 			pixelBin[31-i]=binARGB.charAt(binARGB.length()-1-i)-48;		//Hilfsarray pixelBin wird mit den binaeren Werten gefuellt
 				//Auffuellung von hinten; -48, da ASCII Wert von 1 49 ist
 		}
-		for(int j=0;j<4;j++)
+		for(int j=0;j<4;j++)		//Aufteilung des Hilfsarrays in 4 8-bit Teile
 		{
-			//Aufteilung des Hilfsarrays in 4 8-bit Teile
-			
 			for(int k=0;k<8;k++)
 			{
 							//finales Array wird befuellt
 				pixelFin[3-j]+=pixelBin[31-(j*8)-k]*(int)Math.pow(2, k);	//nach Binaer-Dezimalkonversion errechnet
 							//j*8 ->8 bit jeweils, Aufzaehlung mit 2^k reset, sodass letztlich Farbe eines Pixels in Hexadez. Werten ausgegeben wird: 0-255
-	//			System.out.println(pixelFin[3-j]);		//test
 			}
 		}
 		return pixelFin;
 	}
 	
-	//Testmethode
+	//Test- und Hilfsmethode fuer e) 
 	public static int recolor(int[] color)
 	{
 		String clr="";
 		for(int i=0;i<4;i++)
 		{
-			clr+=Integer.toBinaryString(color[i]);
-			System.out.println(clr);
+			String check=Integer.toBinaryString(color[i]);
+			while(check.length()<8)
+			{
+				check="0"+check;
+			}
+			clr+=check;
 		}
-		return Integer.parseInt(clr,2);
+		try
+		{
+			return -Integer.parseInt(clr,2);
+		}
+		catch(Exception e)
+		{
+			return Integer.parseInt(clr,2);
+		}
 	}
 	
 	/**
@@ -110,18 +117,19 @@ public class Bildbearbeitung {
 	 * @param array 4-elementiges Array
 	 * @return Eine Integerdarstellung einer Farbe in ARGB-Format.
 	 */
-	private int setColors(int[] array) {
+	private int setColors(int[] array) { 
 		int alpha = array[0] << 24;
 		int red = array[1] << 16;
 		int green = array[2] << 8;
 		int blue = array[3];
 		return alpha | red | green | blue;
 	}
-//c)	
+//c)			nicht diese Methode bewerten! weiter unten aktualisierte Version
 	/**
 	 * Das Bild wird hier rotiert und n*90 Grad.
 	 * @param n Anzahl der Vierteldrehungen.
 	 */
+	/*		antik, rudimentaer und unelegant
 	private void rotate(int n) 
 	{
 		int[][] tempPixels=new int[dimY()][dimX()];
@@ -133,10 +141,10 @@ public class Bildbearbeitung {
 				{
 					for(int j = 0; j < dimY(); j++)
 					{
-						//tempPixels mit Rotation fuellen, dann pixels=tempPixels;
-						//analog mit 270° rot
+						   tempPixels[dimY()-1-j][i] = pixels[i][j]; 
 					}
 				}
+				pixels = tempPixels;
 				break;
 			case 2:
 				for(int i = 0; i < dimX(); i++)
@@ -151,9 +159,32 @@ public class Bildbearbeitung {
 				}
 				break;
 			case 3:
+			//UNELEGANZ
+				rotate(1);
+				rotate(1);
+				rotate(1);
 				break;
 			default:return;
 			
+		}
+	}
+	*/
+//c)	
+	public void rotate(int n)
+	{
+		int counter=0;			//zum Zaehlen der Iterationen
+		while(counter<n)
+		{
+			int[][] tempPixels=new int[dimY()][dimX()];		//Dimensionen umgedreht
+			for(int i = 0; i < dimX(); i++)
+			{
+				for(int j = 0; j < dimY(); j++)
+				{
+					tempPixels[dimY()-1-j][i] = pixels[i][j]; //Pixelauffuellung von rechts oben nach links oben
+				}
+			}
+			pixels = tempPixels;
+			counter++;
 		}
 	}
 //d)	
@@ -171,20 +202,20 @@ public class Bildbearbeitung {
 				tempArr=getColors(pixels[i][j]);
 				for(int k=1;k<4;k++)
 				{
-					invArr[0]=tempArr[0];	
+					
 					invArr[k]=255-tempArr[k];
+					
 					//check wird genutzt, um fuehrende Nullen bei den einzelnen Farbwerten einzufuegen
 					String check=Integer.toBinaryString(tempArr[k]);
 					while(check.length()<8)
 					{
 						check="0"+check;
 					}
-					binInv+=check;
+					binInv+=check;				//ohne fuehrende Nullen, ist der int evtl. kein 32-bit Farbcode mehr
 				}
-				//binaerer Farbcode wird wieder zu int verarbeitet
-				pixels[i][j]=-Integer.parseInt(binInv,2);
-				//reset des binaer-Strings
-				binInv="";
+				invArr[0]=tempArr[0];	
+				pixels[i][j]=-Integer.parseInt(binInv,2);		//binaerer Farbcode wird wieder zu int verarbeitet
+				binInv="";			//reset des binaer-Strings
 			}
 		}
 	}
@@ -195,7 +226,7 @@ public class Bildbearbeitung {
 	 */
 	private void mirror() {
 		int temp=0;		//temporaerer Speicher
-		for(int i = 0; i < dimX()/2; i++)			// dimX()/2, da sonst die Spiegelung fuer beide Seiten laeuft-> Originalbild
+		for(int i = 0; i < dimX()/2; i++)			// dimX()/2, da sonst die Spiegelung fuer beide Seiten laeuft -> Originalbild
 		{
 			for(int j = 0; j < dimY(); j++)
 			{
@@ -211,17 +242,92 @@ public class Bildbearbeitung {
 	 * nullwertige Nachbarn zuweist.
 	 */	
 	private int getPixel(int i, int j) {
-		// TODO 8-4-e optional
-		return 0;
-	}
-	
+		try
+		{
+			return pixels[i][j];
+		}
+		catch(Exception e)
+		{
+			//falls out of bounds Exc (nicht im Bild) -> 0
+			return 0;
+		}
+	} 
 	/**
 	 * Diese Funktion betrachtet zu jedem Pixel seine Nachbarschaft, 
 	 * summiert gewichtet diese Menge auf und skaliert sie
 	 * @param filter 3x3 Umgebungsgewichte
 	 */	
+//e) unfinished, no working solution :<	
 	private void meanFilter(double[] filter, double factor) {
-		// TODO 8-4-e
+		int[][] pixelsTemp=new int[dimX()][dimY()];
+		for(int l=0;l<dimX();l++)
+		{
+			for(int m=0;m<dimY();m++)
+			{
+				pixelsTemp[l][m]=pixels[l][m];
+			}
+		}
+		
+		int[] tempArr=new int[4];
+		int[] argbArr= new int[36];			//Farbcodes
+		int[] meanArr= new int[4];			//Durchschnitt der Farbcodes
+		for(int i = 0; i < dimX(); i++)
+		{
+	//		System.out.println("i: "+i);
+			for(int j = 0; j < dimY(); j++)
+			{
+	//			System.out.println("j: "+j);
+				int b=-1,c=-1,counter=0;
+				//for a in here
+				
+					
+					while(b<2)
+					{
+						c=-1;
+						while(c<2)
+						{
+							
+							tempArr=getColors(getPixel(i+c,j+b));
+							for(int d=0;d<4;d++)
+							{
+								argbArr[counter*4+d]=tempArr[d];		
+	//							System.out.print("t: "+tempArr[d]+" ");
+							}
+							counter++;
+		//					System.out.print("C: "+counter+" ");
+							c++;
+						}	
+						b++;
+					}	
+					//print stuff test
+	/*				for(int a=0;a<9;a++)
+					{
+						int g=0;
+						while(g<4)
+						{
+							System.out.print(argbArr[a*4+g]+" ");
+							g++;
+						}
+						
+					}			*/
+					//befuellte argb Werte
+			//		System.out.println("It-end----");
+				double sumClr=0;
+				for(int e=0;e<4;e++)
+				{
+					for(int f=0;f<9;f++)
+					{
+						sumClr+=argbArr[f*4+e]*filter[f];
+					}
+		//			System.out.print("sC: "+sumClr+" ");
+					meanArr[e]=(int)((sumClr/9)*factor);
+	//				System.out.print("mean: "+meanArr[e]+" ");
+				}
+				//cut out pixelsTemp if it doesnt work
+				pixelsTemp[i][j]=recolor(meanArr);
+			}
+		}
+		pixels=pixelsTemp;
 	}
 	
 	
@@ -260,8 +366,27 @@ public class Bildbearbeitung {
 	/** 
 	 * Medianfilter
 	 */	
-	private void medianFilter(){
-		//TODO 8-4-f
+//f)	
+	private void medianFilter()
+	{
+		//temp Array fuer Speicherung der ints anliegender Pixel
+		int[] area = new int[5];
+		for(int i = 0; i < dimX(); i++)
+		{
+			for(int j = 0; j < dimY(); j++)
+			{
+					//Werte der benachbarten Pixel
+							area[0]=getPixel(i,j-1);
+							area[1]=getPixel(i-1,j);
+							area[2]=getPixel(i,j);
+							area[3]=getPixel(i+1,j);
+							area[4]=getPixel(i,j+1);
+					//Sortierung
+				Arrays.sort(area);
+				//update pixels
+				pixels[i][j]=area[2];
+			}
+		}
 	}
 
 	/** 
@@ -333,32 +458,6 @@ public class Bildbearbeitung {
 		
 			bild.save(""+i);
 		}
-/*		
-		//test purposes only
-    	int[] tarray=new int[4];
-  //  	System.out.println(pixels[3][3]);
-    	tarray=getColors(-6386301);
-    	for(int i=0;i<4;i++)
-    	{
-    		switch(i)
-    		{
-    		case 0: System.out.print("Alpha: ");break;
-    		case 1: System.out.print("R: ");break;
-    		case 2: System.out.print("G: ");break;
-    		case 3: System.out.print("B: ");break;
-    		}
-    		System.out.print(tarray[i]+"\n");
-    	}
-    	*/
-		/*test
-		int[] Colors= new int[4];
-		Colors=getColors(pixels[3][5]);
-		System.out.println(pixels[3][5]);
-		System.out.println(Integer.toBinaryString(pixels[3][5]));
-		//11111111010111001001010111011100
-		System.out.println(recolor(Colors));
-		//1111111110111001001010111011100
-		 */
 		bild.save("done");
 		System.out.println("done");
 	}

@@ -1,36 +1,11 @@
 
 public class Array {
-	private static int[] tarray;		//zu Testzwecken t(est)array
 	private static boolean insideArray =true;		//boolscher Wert zur Bestimmung, ob ein Index noch in einem Array noch existiert (siehe a))
-	private static int arrayLength=0;	//Wert fÃ¼r array.length()
-	private static int arrayMax=0;		//Maximum eines Arrays
+	private static int arrayLength=0;	//Wert für Array.getLength()
 	private static int indMax=0;		//Index des Maximums
 	public static void main(String[] args)
-	{	//reines Testing
+	{
 		
-		
-		tarray = new int[5];
-		tarray[0]=3;
-		tarray[1]=2;
-		tarray[2]=4;
-		tarray[3]=5;
-	//	tarray[4]=2;
-	//	tarray[5]=21;
-		arrayLength=arrayLength(tarray);
-		System.out.println(show(tarray));
-	/*	int i=0;
-		while(i<arrayLength)
-		{
-			System.out.println(tarray[i]);
-			i++;
-		}
-		*/
-	//	System.out.println("Laenge:" +arrayLength);
-	//	square(tarray);
-	//	swap(tarray,3,2);
-	//	int[] testarray=resize(tarray,8);
-	//	sort(tarray);
-		System.out.println(median(tarray));
 	}
 //8.1.
 //a)	
@@ -47,9 +22,9 @@ public class Array {
 			System.out.println("keine negativen Indizes");
 			return 0;
 		}
-		//falls i grÃ¶ÃŸer ist als die LÃ¤nge des Arrays, wird der Fehler behandelt 
+		//falls i größer ist als die Länge des Arrays, wird der Fehler behandelt 
 			//zudem wird die Variable insideArray auf falsch gesetzt, bedeutet, dass gewisser Index i nicht mehr
-			//im Array enthalten ist (fuer spaetere Anwendung nuetzlich 
+			//im Array enthalten ist (fuer spaetere Anwendung nuetzlich)
 		try
 		{
 			return array[i];
@@ -63,7 +38,7 @@ public class Array {
 		}
 		return 0;			
 	}
-	//Hilfsmethode
+	//Hilfsmethode		nach Update des Blattes rudimentaer und nutzlos, vor allem umstaendlich
 	public static int arrayLength(int[] array)
 	{
 		int i=0;
@@ -85,7 +60,7 @@ public class Array {
 	public static int sum(int[] array)
 	{
 		int sum=0;
-		/*	antiker Code ohne Hilfemethode
+		/*	antiker Code in Hilfemethode ausgelagert
 		int i=0;
 		int sum=0;
 		while(insideArray)
@@ -110,9 +85,9 @@ public class Array {
 	 * @return Mittelwert der Eintraege im Array
 	 */
 	//double ergibt hier in meinen Augen mehr Sinn als ganzzahlige Div
-	public static double mean(int[] array)
+	public static int mean(int[] array)
 	{
-		return (double)sum(array)/arrayLength;
+		return (int)sum(array)/arrayLength;
 	}
 //d)	
 	/**
@@ -139,14 +114,12 @@ public class Array {
 		arrayLength=arrayLength(array);
 		for(int i=0;i<arrayLength;i++)
 		{
-			if (arrayGet(array,i)>max)
+			if (arrayGet(array,i)>max)		//ist ein Ele groesser als bisheriges Maximum, wird das Max ersetzt mit dem neuen Wert
 			{
 				max=array[i];
-				indMax=i;
+				indMax=i;			//speichert Index des hoechsten Wertes wird fuer resize genutzt
 			}
 		}
-		arrayMax=max;
-		System.out.println("indMax:"+indMax+"\narrayMax:"+arrayMax);
 		return max;	
 	}
 //8.2.
@@ -160,15 +133,15 @@ public class Array {
 	public static void swap(int[] array, int i, int j)
 	{
 		arrayLength=arrayLength(array);
-		if(j>arrayLength-1||j<0||i<0||i>arrayLength-1)
+		if(j>arrayLength-1||j<0||i<0||i>arrayLength-1)		//hier wird ein Spezialfall abgefangen, wenn 
 		{
-			System.out.println("Indizes zu gross");
+			System.out.println("Indizes zu gross/klein");
 			return;
 		}
 		int temp=0;		//temporaer Wert zu Abspeicherung eines Wertes
 		temp=arrayGet(array,j);
 		array[j]=array[i];
-		array[i]=temp;
+		array[i]=temp;			//Werte werden ausgetauscht
 	}
 //b)
 	/**
@@ -179,14 +152,13 @@ public class Array {
 	public static void sort(int[] array)
 	{
 		arrayLength=arrayLength(array);
-		int[] tempArr=array;			//temporaeres Array zur Zwischenspeicherung
+		int[] tempArr=array;		//temporaeres Array zur Zwischenspeicherung
 		int[] sortedArr=new int[arrayLength];	//neu sortiertes Array, dessen aller Werte auf das eingegebene Array dann uebertragen werden
 		for(int i=0;i<arrayLength(array);i++)
 		{
-			sortedArr[arrayLength-1-i]=max(tempArr);		
-			swap(tempArr,indMax,arrayLength(tempArr)-1);
+			sortedArr[arrayLength-1-i]=max(tempArr);			//Max wird rechts eingefuegt
+			swap(tempArr,indMax,arrayLength(tempArr)-1);		//Max wird im Ursprungsarray ans Ende sortiert und dann herausgeschnitten durch resize
 			tempArr=resize(tempArr,arrayLength(tempArr)-1);
-			System.out.println("tempArr:"+show(tempArr)+"\nsortedArr"+show(sortedArr));
 		}
 		
 		for(int j=0;j<arrayLength(array);j++)
@@ -232,19 +204,18 @@ public class Array {
 		int[] newArr=new int[length];
 		if(length>arrayLength)
 		{
-			for(int i=0;i<arrayLength;i++)
+			for(int i=0;i<arrayLength;i++)		//alle Werte werden uebernommen, Standardwerte im Rest des Arrays sind 0, wie in Angabe gefordert
 			{
 				newArr[i]=array[i];
 			}
 		}
 		else
 		{
-			for(int i=0;i<length;i++)
+			for(int i=0;i<length;i++)			//Werte werden bis zur eingegebenen Laenge uebertragen
 			{
 				newArr[i]=array[i];
 			}
 		}
-		System.out.println(show(newArr));
 		return newArr;
 	}
 //e)	
@@ -258,7 +229,7 @@ public class Array {
 		String S="[ ";
 		int i=0;
 		arrayLength=arrayLength(array);
-		while(i<arrayLength)
+		while(i<arrayLength)			//alle Zahlen werden in String verarbeitet und dann angehaengt
 		{
 			S+=array[i]+" ";
 			i++;
